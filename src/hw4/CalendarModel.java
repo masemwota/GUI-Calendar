@@ -297,11 +297,16 @@ public class CalendarModel {
 			TreeSet<Event> myTree = myMap.get(cal); //pull down the treeSet
 			for(Event e: myTree) 
 			{
-				System.out.print(e.getTitle() + " "); 
-				dayEvents += e.getTitle() + " ";
+				//System.out.print(e.getTitle() + " "); 
+				//dayEvents += e.getTitle() + " ";
 				
-				System.out.print(e.getStartTime().get(Calendar.HOUR_OF_DAY) + ":");
-				dayEvents += e.getStartTime().get(Calendar.HOUR_OF_DAY) + ":";
+				if(e.getStartTime().get(Calendar.HOUR_OF_DAY) == 12)
+					dayEvents += "12:";
+				else 
+				{
+					System.out.print(e.getStartTime().get(Calendar.HOUR) + ":");
+					dayEvents += e.getStartTime().get(Calendar.HOUR) + ":";
+				}
 				
 				int sminute = e.getStartTime().get(Calendar.MINUTE); 
 				if (sminute == 0)
@@ -316,13 +321,29 @@ public class CalendarModel {
 					dayEvents += e.getStartTime().get(Calendar.MINUTE) + "";
 				}
 				
+				if(e.getStartTime().get(Calendar.AM_PM) == Calendar.PM)
+				{
+					dayEvents += "PM";
+				}
+				
+				else 
+				{
+					dayEvents += "AM";
+				}
+				
 				if((e.getEndTime() != null) && !(e.getEndTime().equals(e.getStartTime())))
 				{
 					System.out.print(" - ");
 					dayEvents += " - ";
 					
-					System.out.print(e.getEndTime().get(Calendar.HOUR_OF_DAY) + ":");
-					dayEvents += e.getEndTime().get(Calendar.HOUR_OF_DAY) + ":";
+					if(e.getEndTime().get(Calendar.HOUR_OF_DAY) == 12)
+						dayEvents += "12:";
+					
+					else 
+					{
+						System.out.print(e.getEndTime().get(Calendar.HOUR) + ":");
+						dayEvents += e.getEndTime().get(Calendar.HOUR) + ":";
+					}
 					
 					int eminute = e.getEndTime().get(Calendar.MINUTE); 
 					if (eminute == 0)
@@ -336,7 +357,21 @@ public class CalendarModel {
 						System.out.print(e.getEndTime().get(Calendar.MINUTE) +"");
 						dayEvents += e.getEndTime().get(Calendar.MINUTE) +"";
 					}
+					
+					if(e.getEndTime().get(Calendar.AM_PM) == Calendar.PM)
+					{
+						dayEvents += "PM";
+					}
+					
+					else 
+					{
+						dayEvents += "AM";
+					}
+					
 				}
+				System.out.print(": " + e.getTitle() + " "); 
+				dayEvents += ": " + e.getTitle() + " ";
+				
 				System.out.println(" ");
 				dayEvents += " \n";
 			}
@@ -667,6 +702,19 @@ public class CalendarModel {
 		GregorianCalendar dateCal = new GregorianCalendar(year, month, day); //to represent date
 		GregorianCalendar startTimeCal = new GregorianCalendar(year, month, day, sHour, sMinute); //start time calendar
 		
+		
+		String speriod = startString.substring(5, startString.length());
+		if(speriod.equalsIgnoreCase("AM"))
+		{
+			startTimeCal.set(Calendar.AM_PM, Calendar.AM);
+		}
+		
+		else
+		{
+			startTimeCal.set(Calendar.AM_PM, Calendar.PM);
+		}
+		
+		
 		//System.out.println("End time (in 24 hour format - HH:MM) (\"N\" if N/A): ");
 		//sample: 15:30 for 3:30pm
 		//String eTimeString = scan.nextLine(); 
@@ -686,6 +734,17 @@ public class CalendarModel {
 			int eMinute = Integer.parseInt(eMinString);
 			
 			endTimeCal = new GregorianCalendar(year, month, day, eHour, eMinute); //end time calendar
+		}
+		
+		String eperiod = endString.substring(5, startString.length());
+		if(eperiod.equalsIgnoreCase("AM"))
+		{
+			endTimeCal.set(Calendar.AM_PM, Calendar.AM);
+		}
+		
+		else
+		{
+			endTimeCal.set(Calendar.AM_PM, Calendar.PM);
 		}
 		
 		Event myEvent = new Event(title, dateCal, startTimeCal, endTimeCal);
