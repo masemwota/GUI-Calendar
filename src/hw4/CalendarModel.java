@@ -250,12 +250,31 @@ public class CalendarModel {
 		return day;
 	}
 	
+	
+	public String getDate(GregorianCalendar cal)
+	{
+		String day = "";
+		//day += arrayOfDays[cal.get(Calendar.DAY_OF_WEEK)-1];
+		//day += " "; 
+		//day += arrayShortMonths[cal.get(Calendar.MONTH)];
+		day += cal.get(Calendar.MONTH)+1;
+		day += "/"; 
+		day += cal.get(Calendar.DAY_OF_MONTH);
+		day += "/"; 
+		day += cal.get(Calendar.YEAR);
+		//day += "";
+		//day += cal.get(Calendar.YEAR);
+		
+		return day;
+	}
+	
 	/**
 	 * Display the day view for the given day
 	 * @param cal - the calendar to display the day view for
 	 */
-	public void displayDayView(GregorianCalendar cal)
+	public String displayDayView(GregorianCalendar cal)
 	{
+		//System.out.println("Inside display day view");
 		String day = "";
 		day += arrayOfDays[cal.get(Calendar.DAY_OF_WEEK)-1];
 		day += ", "; 
@@ -272,43 +291,60 @@ public class CalendarModel {
 		cal = new GregorianCalendar(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
 		boolean exists = this.eventExists(cal);
 		
+		String dayEvents = "";
 		if(exists)
 		{
 			TreeSet<Event> myTree = myMap.get(cal); //pull down the treeSet
 			for(Event e: myTree) 
 			{
 				System.out.print(e.getTitle() + " "); 
+				dayEvents += e.getTitle() + " ";
+				
 				System.out.print(e.getStartTime().get(Calendar.HOUR_OF_DAY) + ":");
+				dayEvents += e.getStartTime().get(Calendar.HOUR_OF_DAY) + ":";
+				
 				int sminute = e.getStartTime().get(Calendar.MINUTE); 
 				if (sminute == 0)
 				{
 					System.out.print("00");
+					dayEvents += "00";
 				}
 				
 				else 
 				{
 					System.out.print(e.getStartTime().get(Calendar.MINUTE) + "");
+					dayEvents += e.getStartTime().get(Calendar.MINUTE) + "";
 				}
 				
 				if((e.getEndTime() != null) && !(e.getEndTime().equals(e.getStartTime())))
 				{
 					System.out.print(" - ");
+					dayEvents += " - ";
+					
 					System.out.print(e.getEndTime().get(Calendar.HOUR_OF_DAY) + ":");
+					dayEvents += e.getEndTime().get(Calendar.HOUR_OF_DAY) + ":";
+					
 					int eminute = e.getEndTime().get(Calendar.MINUTE); 
 					if (eminute == 0)
 					{
 						System.out.print("00");
+						dayEvents += "00";
 					}
 					
 					else 
 					{
 						System.out.print(e.getEndTime().get(Calendar.MINUTE) +"");
+						dayEvents += e.getEndTime().get(Calendar.MINUTE) +"";
 					}
 				}
 				System.out.println(" ");
+				dayEvents += " \n";
 			}
 			System.out.println(" ");
+			dayEvents += " \n";
 		}
+		
+		return dayEvents;
 	}
 	
 	
@@ -327,8 +363,6 @@ public class CalendarModel {
 		{
 			descriptor += tinyDays[i] + "   "; //the days of the week
 		}
-		
-		//System.out.print(descriptor); 
 
 		//create a temporary calendar set the the first day of this month 
 		GregorianCalendar temp = new GregorianCalendar(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1);
@@ -589,6 +623,127 @@ public class CalendarModel {
 	}
 	
 	
+	public boolean createWithStrings(String nameString, String date, String startString, String endString)
+	{
+		String title = nameString; 
+		
+		//System.out.println("Date (MM/DD/YYYY): ");
+		//Example: MM/DD/YYYY -- 09/12/2017
+		//String date = scan.nextLine(); 
+		
+		String monthString = date.substring(0, 2); 
+		String firstDigit = monthString.substring(0, 1); //first digit of month - either 0 or 1
+		String secondDigit = monthString.substring(1, 2); //second digit of month - 0 to 9
+		
+		int month; //to hold the integer value of the month
+		
+		if(firstDigit.equals("0"))
+		{
+			//if it is less than 10
+			month = Integer.parseInt(secondDigit)-1; 
+		}
+		else 
+		{
+			month = Integer.parseInt(monthString)-1;
+		}
+			
+		String dayString = date.substring(3, 5); 
+		int day = Integer.parseInt(dayString); 
+		
+		String yearString = date.substring(6, date.length());
+		int year = Integer.parseInt(yearString);
+		
+		
+		//System.out.println("Starting time in 24 hour format(HH:MM): "); 
+		//sample: 15:30 for 3:30pm
+		//String sTimeString = scan.nextLine();
+		String sHourString = startString.substring(0, 2); 
+		int sHour = Integer.parseInt(sHourString);
+		
+		String sMinString = startString.substring(3, 5); 
+		int sMinute = Integer.parseInt(sMinString);
+		
+		
+		GregorianCalendar dateCal = new GregorianCalendar(year, month, day); //to represent date
+		GregorianCalendar startTimeCal = new GregorianCalendar(year, month, day, sHour, sMinute); //start time calendar
+		
+		//System.out.println("End time (in 24 hour format - HH:MM) (\"N\" if N/A): ");
+		//sample: 15:30 for 3:30pm
+		//String eTimeString = scan.nextLine(); 
+		GregorianCalendar endTimeCal;
+		
+		if(endString.equalsIgnoreCase("N"))
+		{
+			//end time calendar is set to the start time if not specified
+			endTimeCal = startTimeCal; 
+		}
+		else 
+		{
+			String eHourString = endString.substring(0, 2); 
+			int eHour = Integer.parseInt(eHourString);
+			
+			String eMinString = endString.substring(3, 5); 
+			int eMinute = Integer.parseInt(eMinString);
+			
+			endTimeCal = new GregorianCalendar(year, month, day, eHour, eMinute); //end time calendar
+		}
+		
+		Event myEvent = new Event(title, dateCal, startTimeCal, endTimeCal);
+		
+		//check if this event conflicts with any other events 
+		boolean exist = false; //if day already exists in the map
+		
+		for (GregorianCalendar tempCal : myMap.keySet())
+		{
+			//for each calendar that is in the set of keys, search for the date you want to add
+			if(tempCal.equals(dateCal)) //if date already exits = already at least one event
+			{
+				exist = true; 
+				TreeSet<Event> myTree = myMap.get(dateCal); 
+				
+				for(Event e : myTree)
+				{
+					if(e.equals(myEvent)) 
+					{
+						System.out.println("Event already exists - not created"); 
+						return false;
+					}
+					
+					//(StartA <= EndB)  and  (EndA >= StartB)
+					if((myEvent.getStartTime().before(e.getEndTime())) && (myEvent.getEndTime().after(e.getStartTime())))
+					{
+						System.out.println("There is an event conflict. Event not created."); 
+						return false;
+					}
+					
+					if(myEvent.getStartTime().after(myEvent.getEndTime())) //if start time is after end time
+					{
+						System.out.println("Invalid end time in relation to start time. Event not created."); 
+						return false;
+					}
+				}
+				myTree.add(myEvent); //add event to existing list 
+				myMap.put(dateCal, myTree); //replace the set in the map
+				System.out.println("Event Added!\n");
+				return true;
+			}
+		}
+		
+		if(exist == false)
+		{
+			//calendar doesn't already exist in map
+			//put the key and value in the map
+			TreeSet<Event> myTree = new TreeSet<>(); 
+			
+			myTree.add(myEvent); 
+			myMap.put(dateCal, myTree); 
+			System.out.println("Event Added!\n");
+			return true;
+		}
+		return true;
+	}
+	
+	
 	/*
 	 * Take a string of a date and turn it into a calendar 
 	 * @param date - the string representation to interpret
@@ -645,6 +800,8 @@ public class CalendarModel {
 	 */
 	public void eventList()
 	{	
+		System.out.println("Event list");
+		System.out.println("size: " + myMap.size());
 		for (GregorianCalendar tempCal : myMap.keySet())
 		{
 			this.displayDayView(tempCal);
