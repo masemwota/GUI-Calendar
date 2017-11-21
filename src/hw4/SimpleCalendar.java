@@ -9,17 +9,10 @@ public class SimpleCalendar
 	{
 		CalendarModel calendarModel = new CalendarModel();
 		CalendarComponent calendar = new CalendarComponent(calendarModel);
-		//calendarModel.displayMonth();
-		
-		
-		//String aTitle, GregorianCalendar aDate, GregorianCalendar sTime
-		GregorianCalendar today = new GregorianCalendar();
-		today.set(Calendar.HOUR, 19);
-		Event event1 = new Event("Show", today, today);
-		//calendarModel.quit();
+		calendarModel.addChangeListener(calendar);
 	}
 	
-	//MODEL -- calendar and the events (events.txt)
+	//MODEL -- calendar and the events in hashmap (events.txt)
 	//VIEW -- day and month view
 	//CONTROLLER -- month view of the calendar and buttons
 }

@@ -2,13 +2,20 @@ package hw4;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.*;
 
+import hw4.Event;
+
+
+/**
+ * View and Controller class of pattern 
+ * Calendar Component holds both month view and day view 
+ * @author Marietta Asemwota
+ *
+ */
 public class CalendarComponent extends Component implements ChangeListener
 {
 	private CalendarModel calModel;
@@ -27,7 +34,10 @@ public class CalendarComponent extends Component implements ChangeListener
 	private ArrayList<JTextArea> days;
 	
 	
-	
+	/**
+	 * Constructor takes a model class
+	 * @param calModel - a calendar model class
+	 */
 	public CalendarComponent(CalendarModel calModel)
 	{
 		this.calModel = calModel;
@@ -57,6 +67,10 @@ public class CalendarComponent extends Component implements ChangeListener
 	}
 	
 	
+	/**
+	 * Create and initialize the buttons
+	 * @return a panel with all the buttons
+	 */
 	public JPanel getButtons()
 	{
 		JPanel buttonsPanel = new JPanel(); 
@@ -73,7 +87,7 @@ public class CalendarComponent extends Component implements ChangeListener
 				{
 					public void actionPerformed(ActionEvent e)
 					{
-						System.out.println("Create button clicked");
+						//System.out.println("Create button clicked");
 						createDialog();
 					}
 				});
@@ -84,7 +98,7 @@ public class CalendarComponent extends Component implements ChangeListener
 				{
 					public void actionPerformed(ActionEvent e)
 					{
-						System.out.println("Previous button clicked");
+						//System.out.println("Previous button clicked");
 						myCal.add(Calendar.DAY_OF_MONTH, -1);
 
 						updateMonthView(myCal);
@@ -99,7 +113,7 @@ public class CalendarComponent extends Component implements ChangeListener
 				{
 					public void actionPerformed(ActionEvent e)
 					{	
-						System.out.println("Next button clicked");
+						//System.out.println("Next button clicked");
 						myCal.add(Calendar.DAY_OF_MONTH, 1);
 						
 						updateMonthView(myCal);
@@ -114,7 +128,7 @@ public class CalendarComponent extends Component implements ChangeListener
 				{
 					public void actionPerformed(ActionEvent e)
 					{
-						System.out.println("Quit button clicked");
+						//System.out.println("Quit button clicked");
 						calModel.quit();
 						//setVisible(false);
 						frame.setVisible(false);
@@ -135,8 +149,8 @@ public class CalendarComponent extends Component implements ChangeListener
 	
 	
 	/**
-	 * Includes a textFieldPanel that stores JTextFields for the title, date, start time, and end time of the event.
-	 * A save button adds the event to the TreeMap in the model.
+	 * The entire dialog for creating an event
+	 * Holds the text fields and calls the appropriate methods to create the event
 	 */
 	public void createDialog() 
 	{
@@ -146,23 +160,19 @@ public class CalendarComponent extends Component implements ChangeListener
 		eventDialog.setTitle("Create event");
 		JPanel textFieldPanel = new JPanel();
 
-		// Event Name
 		JTextField eventName = new JTextField();
 		eventName.setText("Untitled Event");
-		Border eventNameBorder = BorderFactory.createLineBorder(Color.BLUE, 1);
-		eventName.setBorder(eventNameBorder);
+		Border nameBorder = BorderFactory.createLineBorder(Color.RED, 1);
+		eventName.setBorder(nameBorder);
 
-		// Event Date
 		JTextField eventDate = new JTextField();
 		eventDate.setText(calModel.getDate(myCal));
-		Border eventDateBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
-		eventDate.setBorder(eventDateBorder);
+		Border dateBorder = BorderFactory.createLineBorder(Color.PINK, 1);
+		eventDate.setBorder(dateBorder);
 		eventDate.setEditable(false);
 
-		// EventStartTime
 		JTextField eventStartTime = new JTextField();
 		String time = "";
-		//myCal.get(Calendar.HOUR) + ":"
 		
 		int hour = myCal.get(Calendar.HOUR);
 		if(hour < 10)
@@ -187,12 +197,12 @@ public class CalendarComponent extends Component implements ChangeListener
 		}
 
 		eventStartTime.setText(time);
-		eventStartTime.setBorder(eventDateBorder);
+		eventStartTime.setBorder(dateBorder);
 
 		// EventEndTime
 		JTextField eventEndTime = new JTextField();
 		eventEndTime.setText("11:59PM");
-		eventEndTime.setBorder(eventDateBorder);
+		eventEndTime.setBorder(dateBorder);
 
 		// Save
 		JButton saveButton = new JButton("Save");
@@ -212,7 +222,7 @@ public class CalendarComponent extends Component implements ChangeListener
 						}
 						repaint();
 						eventDialog.dispose();
-						getDayView();
+						//getDayView();
 					}
 				});
 
@@ -230,17 +240,19 @@ public class CalendarComponent extends Component implements ChangeListener
 	}
 	
 	
-	
+	/**
+	 * Get the month view of the calendar
+	 * @return a panel with all the components for the month
+	 */
 	public JPanel getMonthView()
 	{
 		JPanel wholePanel = new JPanel();
 		wholePanel.setLayout(new BorderLayout());
 		
 		JPanel thisMonthView = new JPanel(); 
-		//monthView.setSize(10, 10);
 		thisMonthView.setBackground(Color.white);
-		thisMonthView.setLayout(new GridLayout(5, 7));
-		//monthView.setBackground(Color.RED);
+		int weeks = myCal.getActualMaximum(Calendar.WEEK_OF_MONTH);
+		thisMonthView.setLayout(new GridLayout(weeks, 7));
 		
 		String monthStr = displayMonth(myCal);
 		
@@ -259,7 +271,10 @@ public class CalendarComponent extends Component implements ChangeListener
 	}
 	
 	
-		
+	/**
+	 * Updates the month view after changing to a different date or any other change
+	 * @param temp - the new date to display
+	 */
 	public void updateMonthView(GregorianCalendar temp)
 	{
 		days = new ArrayList<>();
@@ -273,9 +288,11 @@ public class CalendarComponent extends Component implements ChangeListener
 	}
 	
 	
-	
-	
-	
+	/**
+	 * Creates the actual days in the month and makes them click-able 
+	 * @param cal - the day to display as the current day
+	 * @return a string with the description at the top
+	 */
 	public String displayMonth(GregorianCalendar cal)
 	{
 		String descriptor = ""; //holds the string for the descriptor which has month and year
@@ -307,8 +324,9 @@ public class CalendarComponent extends Component implements ChangeListener
 			if(j < firstDay) //before the days start printing
 			{
 				JTextArea space = new JTextArea(); 
-				space.setText("  ");
+				space.setText(" ");
 				space.setSize(0, 0);
+				space.setEditable(false);
 				days.add(space);
 			}
 			
@@ -319,7 +337,7 @@ public class CalendarComponent extends Component implements ChangeListener
 					//System.out.println("Is the day");
 					//System.out.println("cal: " + cal.get(Calendar.DAY_OF_MONTH)  + " temp: " + temp.get(Calendar.DAY_OF_MONTH));
 					JTextArea day = new JTextArea();
-					day.setText(temp.get(Calendar.DAY_OF_MONTH) + "");
+					day.setText("" + temp.get(Calendar.DAY_OF_MONTH));
 					day.setEditable(false);
 					day.setSize(0, 0);
 					day.setBackground(Color.gray);
@@ -328,9 +346,10 @@ public class CalendarComponent extends Component implements ChangeListener
 							{
 								public void mouseClicked(MouseEvent e)
 								{
+									//String realDate = day.getText().substring(1);
 									int date = Integer.parseInt(day.getText());
+									//int date = Integer.parseInt(realDate);
 									cal.set(Calendar.DAY_OF_MONTH, date);
-									
 									updateMonthView(cal);
 									getDayView();
 									repaint();
@@ -366,6 +385,125 @@ public class CalendarComponent extends Component implements ChangeListener
 	}
 	
 	
+	/**
+	 * Display the day view for the given day
+	 * @param cal - the calendar to display the day view for
+	 */
+	public String displayDayView(GregorianCalendar cal)
+	{
+		String day = "";
+		day += CalendarModel.arrayOfDays[cal.get(Calendar.DAY_OF_WEEK)-1];
+		day += ", "; 
+		day += CalendarModel.arrayShortMonths[cal.get(Calendar.MONTH)];
+		day += " "; 
+		day += cal.get(Calendar.DAY_OF_MONTH);
+		day += ", ";
+		day += cal.get(Calendar.YEAR);
+		
+		//System.out.println(day);
+		
+		//check if there are any events for this day and display them
+		//create a calendar based on same date but default time of 0 for easy comparison
+		cal = new GregorianCalendar(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+		boolean exists = calModel.eventExists(cal);
+		
+		String dayEvents = "";
+		if(exists)
+		{
+			TreeMap<GregorianCalendar, TreeSet<Event>> theMap = calModel.getEvents();
+			TreeSet<Event> myTree = theMap.get(cal); //pull down the treeSet
+			for(Event e: myTree) 
+			{
+				//System.out.print(e.getTitle() + " "); 
+				//dayEvents += e.getTitle() + " ";
+				
+				if(e.getStartTime().get(Calendar.HOUR_OF_DAY) == 12)
+					dayEvents += "12:";
+				else 
+				{
+					//System.out.print(e.getStartTime().get(Calendar.HOUR) + ":");
+					dayEvents += e.getStartTime().get(Calendar.HOUR) + ":";
+				}
+				
+				int sminute = e.getStartTime().get(Calendar.MINUTE); 
+				if (sminute == 0)
+				{
+					//System.out.print("00");
+					dayEvents += "00";
+				}
+				
+				else 
+				{
+					//System.out.print(e.getStartTime().get(Calendar.MINUTE) + "");
+					dayEvents += e.getStartTime().get(Calendar.MINUTE) + "";
+				}
+				
+				if(e.getStartTime().get(Calendar.AM_PM) == Calendar.PM)
+				{
+					dayEvents += "PM";
+				}
+				
+				else 
+				{
+					dayEvents += "AM";
+				}
+				
+				if((e.getEndTime() != null) && !(e.getEndTime().equals(e.getStartTime())))
+				{
+					//System.out.print(" - ");
+					dayEvents += " - ";
+					
+					if(e.getEndTime().get(Calendar.HOUR_OF_DAY) == 12)
+						dayEvents += "12:";
+					
+					else 
+					{
+						//System.out.print(e.getEndTime().get(Calendar.HOUR) + ":");
+						dayEvents += e.getEndTime().get(Calendar.HOUR) + ":";
+					}
+					
+					int eminute = e.getEndTime().get(Calendar.MINUTE); 
+					if (eminute == 0)
+					{
+						//System.out.print("00");
+						dayEvents += "00";
+					}
+					
+					else 
+					{
+						//System.out.print(e.getEndTime().get(Calendar.MINUTE) +"");
+						dayEvents += e.getEndTime().get(Calendar.MINUTE) +"";
+					}
+					
+					if(e.getEndTime().get(Calendar.AM_PM) == Calendar.PM)
+					{
+						dayEvents += "PM";
+					}
+					
+					else 
+					{
+						dayEvents += "AM";
+					}
+					
+				}
+				//System.out.print(": " + e.getTitle() + " "); 
+				dayEvents += ": " + e.getTitle() + " ";
+				
+				//System.out.println(" ");
+				dayEvents += " \n";
+			}
+			//System.out.println(" ");
+			dayEvents += " \n";
+		}
+		
+		return dayEvents;
+	}
+	
+	
+	/**
+	 * Get the gui part of the day view 
+	 * @return a panel with all the parts to display a day view
+	 */
 	public JPanel getDayView()
 	{
 		dayViewPanel = new JPanel();
@@ -377,7 +515,7 @@ public class CalendarComponent extends Component implements ChangeListener
 		dateText.setText(day);
 		dayViewPanel.add(dateText, BorderLayout.NORTH);
 		
-		String events = calModel.displayDayView(myCal);
+		String events = displayDayView(myCal);
 		dayEvents.setEditable(false);
 		dayEvents.setText(events);
 		dayViewPanel.add(dayEvents, BorderLayout.CENTER);
@@ -389,10 +527,13 @@ public class CalendarComponent extends Component implements ChangeListener
 		return dayViewPanel;
 	}
 	
-	
-	
+	/**
+	 * When the state is changed - an event is created, display the event
+	 */
 	public void stateChanged(ChangeEvent e)
 	{
-		//
+		//System.out.println("State changed");
+		getDayView();
+		repaint();
 	}
 }
