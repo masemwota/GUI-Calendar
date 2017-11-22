@@ -251,8 +251,8 @@ public class CalendarComponent extends Component implements ChangeListener
 		
 		JPanel thisMonthView = new JPanel(); 
 		thisMonthView.setBackground(Color.white);
-		int weeks = myCal.getActualMaximum(Calendar.WEEK_OF_MONTH);
-		thisMonthView.setLayout(new GridLayout(weeks, 7));
+		//int weeks = myCal.getActualMaximum(Calendar.WEEK_OF_MONTH);
+		thisMonthView.setLayout(new GridLayout(0, 7));
 		
 		String monthStr = displayMonth(myCal);
 		
